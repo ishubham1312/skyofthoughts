@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sky of Thoughts - A Starry Note Collector</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .night-sky {
+            background: linear-gradient(to bottom, #0a0d25 0%, #191e3c 40%, #2c2f58 70%, #3b3a6d 100%);
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .moon {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 30% 30%, #fffefa, #d3d3d3);
+            border-radius: 50%;
+            box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.6);
+            top: 50px;
+            right: 80px;
+        }
+        
+        .star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.7);
+            animation: twinkle 3s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% {
+                opacity: 0.3;
+                box-shadow: 0 0 8px 1px rgba(255, 255, 255, 0.3);
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.8);
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 0.5;
+                box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.5);
+                transform: scale(0.9);
+            }
+        }
+        
+        .shooting-star {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 1) 100%);
+            border-radius: 100px;
+            transform-origin: left;
+            z-index: 9;
+            filter: drop-shadow(0 0 6px white);
+            animation: shoot-star-improved 3s ease-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes shoot-star-improved {
+            0% {
+                opacity: 0;
+                width: 0;
+                transform: rotate(var(--rotation)) translateX(0) scale(0.1);
+            }
+            3% {
+                opacity: 1;
+                width: calc(var(--length) * 1px);
+                transform: rotate(var(--rotation)) translateX(0) scale(0.1);
+            }
+            30% {
+                width: calc(var(--length) * 1.5px);
+                opacity: 1;
+                transform: rotate(var(--rotation)) translateX(calc(var(--travel) * 0.3px)) scale(0.4);
+            }
+            80% {
+                width: calc(var(--length) * 1px);
+                opacity: 0.8;
+                transform: rotate(var(--rotation)) translateX(calc(var(--travel) * 0.8px)) scale(0.7);
+            }
+            100% {
+                width: calc(var(--length) * 0.5px);
+                opacity: 0;
+                transform: rotate(var(--rotation)) translateX(calc(var(--travel) * 1px)) scale(0.3);
+            }
+        }
+        
+        .shoot-trail {
+            position: absolute;
+            height: 1px;
+            transform-origin: left;
+            z-index: 8;
+            filter: blur(1px);
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 100%);
+            animation: trail-fade 3s ease-out forwards;
+            opacity: 0;
+        }
+
+        .shooting-star::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 4px white;
+            animation: star-twinkle 0.5s infinite alternate;
+            animation-delay: calc(var(--length) * 0.01s);
+        }
+
+        @keyframes star-twinkle {
+            0% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        @keyframes trail-fade {
+            0% {
+                opacity: 0;
+                width: 0;
+            }
+            5% {
+                opacity: 0.3;
+                width: calc(var(--length) * 5px);
+            }
+            40% {
+                opacity: 0.2;
+                width: calc(var(--length) * 15px);
+            }
+            100% {
+                opacity: 0;
+                width: calc(var(--length) * 20px);
+            }
+        }
+        
+        .add-star-btn {
+            position: fixed;
+            bottom: 40px; /* Increased from 20px */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000; /* Increased z-index */
+            transition: all 0.3s ease;
+            /* Mobile-specific adjustments */
+            width: auto;
+            max-width: 90%;
+            padding: 12px 24px; /* Increased padding for better touch target */
+            white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .add-star-btn:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+        
+        /* Ensure button is visible on smaller screens */
+        @media (max-width: 768px) {
+            .add-star-btn {
+                bottom: 60px; /* Increased from 30px */
+                font-size: 16px; /* Ensure readable text size */
+                padding: 10px 20px;
+            }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #1f2246, #171a36);
+            padding: 2rem;
+            border-radius: 18px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            position: relative;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            line-height: 1.4;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content p {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .modal-content button {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .modal-content button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .star-count {
+            position: absolute;
+            bottom: 45px;
+            right: 20px;
+            color: white;
+            font-size: 14px;
+            z-index: 100;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        textarea:focus, input:focus, button:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <audio id="backgroundAudio" autoplay loop>
+        <source src="assest/audio.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <div class="night-sky">
+        <button id="musicToggle" class="absolute top-4 left-4 z-50 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800/70 transition-colors" title="Toggle Music">
+            <i class="fas fa-volume-up text-white"></i>
+        </button>
+        <div class="moon"></div>
+        <div id="starContainer"></div>
+        
+        <!-- Database Link -->
+        <a href="database.html" class="absolute bottom-4 left-4 z-50 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800/70 transition-colors">
+            <i class="fas fa-database text-white"></i>
+        </a>
+        
+        <button class="add-star-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full shadow-lg flex items-center">
+            <span class="mr-2">Add Star</span>
+            <span class="text-yellow-300">🌟</span>
+        </button>
+        
+        <div class="star-count">Stars: <span id="starCountDisplay">0</span></div>
+    </div>
+    
+    <!-- Add Star Modal -->
+    <div class="modal" id="addStarModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="text-white text-xl font-bold mb-4">Add Your Thought</h2>
+            <textarea id="thoughtInput" class="w-full h-32 p-3 bg-gray-800 text-white rounded-lg border border-gray-600 focus:border-indigo-500 mb-4" placeholder="Write your thought here..."></textarea>
+            <button id="submitThought" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg w-full">
+                Create Star ✨
+            </button>
+        </div>
+    </div>
+    
+    <!-- View Star Modal -->
+    <div class="modal" id="viewStarModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeViewModal">&times;</span>
+            <h2 class="text-white text-xl font-bold mb-4">Star Thought</h2>
+            <div id="thoughtDisplay" class="w-full min-h-32 p-3 bg-gray-800 text-white rounded-lg border border-gray-600 mb-4"></div>
+        </div>
+    </div>
+
+    <!-- Welcome Modal -->
+    <div class="modal" id="welcomeModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="text-white text-xl font-bold mb-4">✨Welcome to Sky of Thoughts✨</h2>
+            <div class="text-gray-200 space-y-4">
+                <p>Some thoughts are too quiet to be heard,<br>
+                too soft to be shouted,<br>
+                too heavy to be carried alone.</p>
+                
+                <p>So we send them to the stars.</p>
+                
+                <p>Here, each glowing dot in the sky holds a piece of someone's heart —<br>
+                a memory, a whisper, a secret wish.</p>
+                
+                <p>Add yours. Let it float, sparkle, and maybe just<br>
+                make someone else feel a little less alone.</p>
+                
+                <p class="italic text-gray-400">And hey… if nothing else, at least you're officially contributing to space junk… emotionally. 😌✨</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Music Confirmation Modal -->
+    <div class="modal" id="musicConfirmationModal">
+        <div class="modal-content">
+            <h2 class="text-white mb-4">
+                <i class="fas fa-music text-indigo-400 mr-2"></i>
+                <span class="text-2xl">The Stars have a song.</span>
+                <br>
+                <span class="text-xl">Shall we play it?</span>
+            </h2>
+            <p class="text-gray-200 mb-6">Would you like to play background music?</p>
+            <div class="flex justify-end space-x-4">
+                <button id="musicNo" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+                    <i class="fas fa-moon text-yellow-300 mr-2"></i>
+                    Stargaze in silence
+                </button>
+                <button id="musicYes" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">
+                    <i class="fas fa-music text-yellow-300 mr-2"></i>
+                    Let them sing
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        // DOM elements
+        const starContainer = document.getElementById('starContainer');
+        const addStarBtn = document.querySelector('.add-star-btn');
+        const addStarModal = document.getElementById('addStarModal');
+        const viewStarModal = document.getElementById('viewStarModal');
+        const welcomeModal = document.getElementById('welcomeModal');
+        const thoughtInput = document.getElementById('thoughtInput');
+        const submitThoughtBtn = document.getElementById('submitThought');
+        const thoughtDisplay = document.getElementById('thoughtDisplay');
+        const closeModalBtns = document.querySelectorAll('.close-modal');
+        const starCountDisplay = document.getElementById('starCountDisplay');
+        const musicToggle = document.getElementById('musicToggle');
+        const backgroundAudio = document.getElementById('backgroundAudio');
+        const musicYesBtn = document.getElementById('musicYes');
+        const musicNoBtn = document.getElementById('musicNo');
+        const musicConfirmationModal = document.getElementById('musicConfirmationModal');
+
+        // Global stars array
+        let stars = [];
+
+        // Show music confirmation modal when page loads
+        window.addEventListener('load', () => {
+            // Check if we're returning from database page
+            const prevPage = document.referrer;
+            if (!prevPage.includes('database.html')) {
+                musicConfirmationModal.style.display = 'flex';
+            } else {
+                // If returning from database, maintain previous music state
+                const wasMusicPlaying = localStorage.getItem('musicPlaying') === 'true';
+                if (wasMusicPlaying) {
+                    backgroundAudio.play();
+                    musicToggle.innerHTML = '<i class="fas fa-volume-up text-white"></i>';
+                } else {
+                    backgroundAudio.pause();
+                    musicToggle.innerHTML = '<i class="fas fa-volume-mute text-white"></i>';
+                }
+            }
+        });
+
+        // Music toggle functionality
+        musicToggle.addEventListener('click', () => {
+            if (backgroundAudio.paused) {
+                backgroundAudio.play();
+                musicToggle.innerHTML = '<i class="fas fa-volume-up text-white"></i>';
+                localStorage.setItem('musicPlaying', 'true');
+            } else {
+                backgroundAudio.pause();
+                musicToggle.innerHTML = '<i class="fas fa-volume-mute text-white"></i>';
+                localStorage.setItem('musicPlaying', 'false');
+            }
+        });
+
+        // Music confirmation functionality
+        musicYesBtn.addEventListener('click', () => {
+            backgroundAudio.play();
+            musicConfirmationModal.style.display = 'none';
+            musicToggle.innerHTML = '<i class="fas fa-volume-up text-white"></i>';
+            localStorage.setItem('musicPlaying', 'true');
+        });
+
+        musicNoBtn.addEventListener('click', () => {
+            backgroundAudio.pause();
+            musicConfirmationModal.style.display = 'none';
+            musicToggle.innerHTML = '<i class="fas fa-volume-mute text-white"></i>';
+            localStorage.setItem('musicPlaying', 'false');
+        });
+
+        // Load stars from local storage
+        function loadStars() {
+            try {
+                const storedStars = JSON.parse(localStorage.getItem('stars')) || [];
+                stars = storedStars;
+                updateStarCount(stars.length);
+                renderStars();
+            } catch (error) {
+                console.error("Error loading stars:", error);
+                alert("Failed to load stars. Please try again.");
+            }
+        }
+
+        // Save star to local storage
+        function saveStar(star) {
+            try {
+                stars.push(star);
+                localStorage.setItem('stars', JSON.stringify(stars));
+                updateStarCount(stars.length);
+            } catch (error) {
+                console.error("Error saving star:", error);
+                throw error;
+            }
+        }
+
+        // Update star count display
+        function updateStarCount(count) {
+            starCountDisplay.textContent = count;
+        }
+        
+        // Render existing stars
+        function renderStars() {
+            starContainer.innerHTML = '';
+            stars.forEach((star) => {
+                createStarElement(star.x, star.y, star.thought, star.id);
+            });
+        }
+        
+        // Create a new star
+        function addNewStar(thought) {
+            const x = 5 + Math.random() * 90;
+            const y = 5 + Math.random() * 70;
+            
+            const star = {
+                id: Date.now().toString(),
+                x,
+                y,
+                thought,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                console.log('Saving star to local storage...', star);
+                saveStar(star);
+                
+                // Create and add the star element to the DOM
+                createStarElement(star.x, star.y, star.thought, star.id);
+                
+                // Show success message
+                const successMessage = document.createElement('div');
+                successMessage.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(0, 255, 0, 0.8);
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    z-index: 9999;
+                `;
+                successMessage.textContent = 'Star created successfully!';
+                document.body.appendChild(successMessage);
+                setTimeout(() => successMessage.remove(), 3000);
+                
+                return star;
+            } catch (error) {
+                console.error('Error in addNewStar:', error);
+                throw error;
+            }
+        }
+
+        // Create a star element
+        function createStarElement(x, y, thought, id) {
+            console.log('Creating star element:', { x, y, thought, id });
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = `${x}vw`;
+            star.style.top = `${y}vh`;
+            star.dataset.id = id;
+            star.dataset.thought = thought;
+            
+            // Random twinkling delay for each star
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            
+            // Random size variation
+            const size = 3 + Math.random() * 2;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            
+            star.addEventListener('click', () => {
+                displayStarThought(id);
+            });
+            
+            starContainer.appendChild(star);
+            console.log('Star element added to container');
+        }
+        
+        // Display a star's thought
+        function displayStarThought(starId) {
+            const star = stars.find(s => s.id === starId);
+            if (star) {
+                thoughtDisplay.textContent = star.thought;
+                viewStarModal.style.display = 'flex';
+            } else {
+                console.error("Star not found");
+                alert("Failed to display star. Please try again.");
+            }
+        }
+        
+        // Create shooting stars
+        function setupShootingStars() {
+            function createShootingStar() {
+                const shootingStar = document.createElement('div');
+                const trailElement = document.createElement('div');
+                
+                // Random starting position along the edges
+                const side = Math.floor(Math.random() * 4); // 0: top, 1: right, 2: bottom, 3: left
+                let startX, startY;
+                
+                switch(side) {
+                    case 0: // top
+                        startX = Math.random() * 100;
+                        startY = 0;
+                        break;
+                    case 1: // right
+                        startX = 100;
+                        startY = Math.random() * 100;
+                        break;
+                    case 2: // bottom
+                        startX = Math.random() * 100;
+                        startY = 100;
+                        break;
+                    case 3: // left
+                        startX = 0;
+                        startY = Math.random() * 100;
+                        break;
+                }
+                
+                // Determine trajectory (angle away from edge)
+                let rotation;
+                if (side === 0) rotation = 30 + Math.random() * 30; // from top, down-right
+                else if (side === 1) rotation = 120 + Math.random() * 30; // from right, down-left
+                else if (side === 2) rotation = 210 + Math.random() * 30; // from bottom, up-left
+                else rotation = 300 + Math.random() * 30; // from left, up-right
+                
+                // Calculate properties for animation
+                const length = 30 + Math.random() * 70; // Length of shooting star
+                const travel = 300 + Math.random() * 700; // How far it will travel
+                
+                // Apply to shooting star
+                shootingStar.className = 'shooting-star';
+                shootingStar.style.left = `${startX}vw`;
+                shootingStar.style.top = `${startY}vh`;
+                shootingStar.style.setProperty('--rotation', `${rotation}deg`);
+                shootingStar.style.setProperty('--length', length);
+                shootingStar.style.setProperty('--travel', travel);
+                
+                // Apply to trail
+                trailElement.className = 'shoot-trail';
+                trailElement.style.left = `${startX}vw`;
+                trailElement.style.top = `${startY}vh`;
+                trailElement.style.setProperty('--rotation', `${rotation}deg`);
+                trailElement.style.setProperty('--length', length);
+                trailElement.style.setProperty('--travel', travel);
+                
+                starContainer.appendChild(shootingStar);
+                starContainer.appendChild(trailElement);
+                
+                // Remove after animation completes
+                setTimeout(() => {
+                    shootingStar.remove();
+                    trailElement.remove();
+                }, 3000);
+            }
+            
+            // Create shooting stars periodically
+            createShootingStar(); // Initial shooting star
+            setInterval(createShootingStar, 6000 + Math.random() * 2000); // Every 6-8 seconds
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Moon click event
+            const moon = document.querySelector('.moon');
+            moon.style.cursor = 'pointer';
+            moon.addEventListener('click', () => {
+                welcomeModal.style.display = 'flex';
+            });
+
+            // Open add star modal
+            addStarBtn.addEventListener('click', () => {
+                console.log('Add star button clicked');
+                thoughtInput.value = '';
+                addStarModal.style.display = 'flex';
+                thoughtInput.focus();
+            });
+            
+            // Submit thought
+            submitThoughtBtn.addEventListener('click', () => {
+                const thought = thoughtInput.value.trim();
+                if (!thought) {
+                    alert("Please enter a thought first!");
+                    return;
+                }
+
+                submitThoughtBtn.disabled = true;
+                submitThoughtBtn.textContent = 'Creating...';
+                
+                try {
+                    console.log('Attempting to add new star...');
+                    const star = addNewStar(thought);
+                    console.log('Star added successfully:', star);
+                    addStarModal.style.display = 'none';
+                    thoughtInput.value = '';
+                } catch (error) {
+                    console.error("Error creating star:", error);
+                    alert("Failed to create star. Please try again.");
+                } finally {
+                    submitThoughtBtn.disabled = false;
+                    submitThoughtBtn.textContent = 'Create Star ✨';
+                }
+            });
+            
+            // Close modals
+            closeModalBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    addStarModal.style.display = 'none';
+                    viewStarModal.style.display = 'none';
+                    welcomeModal.style.display = 'none';
+                });
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === addStarModal) {
+                    addStarModal.style.display = 'none';
+                }
+                if (e.target === viewStarModal) {
+                    viewStarModal.style.display = 'none';
+                }
+                if (e.target === welcomeModal) {
+                    welcomeModal.style.display = 'none';
+                }
+            });
+            
+            // Submit on Enter key
+            thoughtInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    submitThoughtBtn.click();
+                }
+            });
+        }
+        
+        // Initialize the app
+        function init() {
+            console.log('Local storage initialized');
+            setupEventListeners();
+            setupShootingStars();
+            loadStars();
+            
+            // Show welcome modal on first visit
+            if (!localStorage.getItem('welcomeShown')) {
+                welcomeModal.style.display = 'flex';
+                localStorage.setItem('welcomeShown', 'true');
+            }
+        }
+        
+        // Initialize the app when DOM is loaded
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
