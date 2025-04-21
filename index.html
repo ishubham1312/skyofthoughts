@@ -251,15 +251,61 @@
         }
         
         .star-count {
-            position: absolute;
-            bottom: 45px;
+            position: fixed;  /* Changed from absolute to fixed */
+            bottom: 100px;   /* Increased from 45px */
             right: 20px;
             color: white;
             font-size: 14px;
-            z-index: 100;
-            background-color: rgba(0, 0, 0, 0.4);
-            padding: 5px 10px;
+            z-index: 1000;   /* Increased z-index */
+            background-color: rgba(0, 0, 0, 0.6); /* Made background more visible */
+            padding: 8px 15px;  /* Increased padding */
             border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Added shadow for better visibility */
+        }
+
+        /* Database icon styles */
+        .database-link {
+            position: fixed !important;  /* Changed from absolute to fixed */
+            bottom: 100px !important;    /* Increased from bottom-4 */
+            left: 20px !important;
+            z-index: 1000 !important;    /* Increased z-index */
+            padding: 12px !important;    /* Increased padding for better touch target */
+            background-color: rgba(31, 41, 55, 0.8) !important; /* Made background more visible */
+            border-radius: 50% !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+            transition: all 0.3s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .database-link:hover {
+            transform: scale(1.1) !important;
+            background-color: rgba(31, 41, 55, 0.9) !important;
+        }
+
+        .database-link i {
+            font-size: 20px !important;
+        }
+
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .star-count {
+                bottom: 140px;  /* Moved up to avoid overlap with add star button */
+                right: 10px;
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .database-link {
+                bottom: 140px !important; /* Moved up to avoid overlap with add star button */
+                left: 10px !important;
+                padding: 10px !important;
+            }
+
+            .database-link i {
+                font-size: 18px !important;
+            }
         }
         
         textarea:focus, input:focus, button:focus {
@@ -280,7 +326,7 @@
         <div id="starContainer"></div>
         
         <!-- Database Link -->
-        <a href="database.html" class="absolute bottom-4 left-4 z-50 p-2 bg-gray-800/50 rounded-full hover:bg-gray-800/70 transition-colors">
+        <a href="database.html" class="database-link">
             <i class="fas fa-database text-white"></i>
         </a>
         
@@ -467,8 +513,28 @@
         
         // Create a new star
         function addNewStar(thought) {
-            const x = 5 + Math.random() * 90;
-            const y = 5 + Math.random() * 70;
+            let x, y;
+            const moonElement = document.querySelector('.moon');
+            const moonRect = moonElement.getBoundingClientRect();
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            
+            // Convert moon position to vw/vh
+            const moonLeftVw = (moonRect.left / windowWidth) * 100;
+            const moonTopVh = (moonRect.top / windowHeight) * 100;
+            const moonWidthVw = (moonRect.width / windowWidth) * 100;
+            const moonHeightVh = (moonRect.height / windowHeight) * 100;
+
+            // Keep generating new positions until we find one that doesn't overlap with the moon
+            do {
+                x = 5 + Math.random() * 90;
+                y = 5 + Math.random() * 70;
+            } while (
+                x > moonLeftVw - 5 && 
+                x < moonLeftVw + moonWidthVw + 5 && 
+                y > moonTopVh - 5 && 
+                y < moonTopVh + moonHeightVh + 5
+            );
             
             const star = {
                 id: Date.now().toString(),
