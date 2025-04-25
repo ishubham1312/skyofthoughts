@@ -112,12 +112,19 @@
     </div>
 
     <script>
-        // Load messages from local storage
-        function loadMessages() {
+        // Load messages from API
+        async function loadMessages() {
             try {
-                const stars = JSON.parse(localStorage.getItem('stars')) || [];
-                stars.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                displayMessages(stars);
+                const response = await fetch('https://skyofthoughts.onrender.com/api/stars');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const stars = result.data;
+                    stars.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    displayMessages(stars);
+                } else {
+                    throw new Error('Failed to fetch stars');
+                }
             } catch (error) {
                 console.error("Error loading messages:", error);
                 alert("Failed to load messages. Please try again.");

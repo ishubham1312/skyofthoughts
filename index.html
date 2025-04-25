@@ -473,11 +473,15 @@
             localStorage.setItem('musicPlaying', 'false');
         });
 
-        // Load stars from local storage
-        function loadStars() {
+        // Load stars from API
+        async function loadStars() {
             try {
-                const storedStars = JSON.parse(localStorage.getItem('stars')) || [];
-                stars = storedStars;
+                const response = await fetch('https://skyofthoughts.onrender.com/api/stars');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch stars');
+                }
+                const data = await response.json();                
+                stars = data?.data;
                 updateStarCount(stars.length);
                 renderStars();
             } catch (error) {
@@ -486,11 +490,22 @@
             }
         }
 
-        // Save star to local storage
-        function saveStar(star) {
+        // Save star to API
+        async function saveStar(star) {
             try {
+                const response = await fetch('https://skyofthoughts.onrender.com/api/stars', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(star)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to save star');
+                }
+                
                 stars.push(star);
-                localStorage.setItem('stars', JSON.stringify(stars));
                 updateStarCount(stars.length);
             } catch (error) {
                 console.error("Error saving star:", error);
