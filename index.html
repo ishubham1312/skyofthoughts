@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="./assest/star-alt-icon_34347.ico" type="image/x-icon">
     <style>
         body, html {
             margin: 0;
@@ -480,7 +481,7 @@
                 if (!response.ok) {
                     throw new Error('Failed to fetch stars');
                 }
-                const data = await response.json();                
+                const data = await response.json();
                 stars = data?.data;
                 updateStarCount(stars.length);
                 renderStars();
