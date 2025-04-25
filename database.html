@@ -48,8 +48,6 @@
             position: relative;
         }
 
-
-
         .message-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
@@ -97,9 +95,36 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
+
+        /* Music toggle button style */
+        #musicToggle {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 50;
+            padding: 0.5rem;
+            background: rgba(31, 41, 55, 0.5);
+            border-radius: 9999px;
+            transition: background-color 0.3s;
+        }
+
+        #musicToggle:hover {
+            background: rgba(31, 41, 55, 0.7);
+        }
     </style>
 </head>
 <body>
+    <!-- Add audio element -->
+    <audio id="backgroundAudio" loop>
+        <source src="assest/audio.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Add music toggle button -->
+    <button id="musicToggle" class="p-2 bg-gray-800/50 rounded-full hover:bg-gray-800/70 transition-colors" title="Toggle Music">
+        <i class="fas fa-volume-up text-white"></i>
+    </button>
+
     <div class="container">
         <h1>✨ Star Message Database ✨</h1>
         
@@ -114,6 +139,44 @@
     </div>
 
     <script>
+        // Music control functionality
+        const musicToggle = document.getElementById('musicToggle');
+        const backgroundAudio = document.getElementById('backgroundAudio');
+
+        // Initialize music state from localStorage
+        window.addEventListener('load', () => {
+            const wasMusicPlaying = localStorage.getItem('musicPlaying') === 'true';
+            const musicPosition = parseFloat(localStorage.getItem('musicPosition') || '0');
+            
+            if (wasMusicPlaying) {
+                backgroundAudio.currentTime = musicPosition;
+                backgroundAudio.play();
+                musicToggle.innerHTML = '<i class="fas fa-volume-up text-white"></i>';
+            } else {
+                backgroundAudio.pause();
+                musicToggle.innerHTML = '<i class="fas fa-volume-mute text-white"></i>';
+            }
+        });
+
+        // Store music position before unloading page
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('musicPosition', backgroundAudio.currentTime.toString());
+        });
+
+        // Music toggle functionality
+        musicToggle.addEventListener('click', () => {
+            if (backgroundAudio.paused) {
+                backgroundAudio.play();
+                musicToggle.innerHTML = '<i class="fas fa-volume-up text-white"></i>';
+                localStorage.setItem('musicPlaying', 'true');
+            } else {
+                backgroundAudio.pause();
+                musicToggle.innerHTML = '<i class="fas fa-volume-mute text-white"></i>';
+                localStorage.setItem('musicPlaying', 'false');
+            }
+            localStorage.setItem('musicPosition', backgroundAudio.currentTime.toString());
+        });
+
         // Load messages from API
         async function loadMessages() {
             try {

@@ -436,7 +436,10 @@
             } else {
                 // If returning from database, maintain previous music state
                 const wasMusicPlaying = localStorage.getItem('musicPlaying') === 'true';
+                const musicPosition = parseFloat(localStorage.getItem('musicPosition') || '0');
+                
                 if (wasMusicPlaying) {
+                    backgroundAudio.currentTime = musicPosition;
                     backgroundAudio.play();
                     musicToggle.innerHTML = '<i class="fas fa-volume-up text-white"></i>';
                 } else {
@@ -444,6 +447,11 @@
                     musicToggle.innerHTML = '<i class="fas fa-volume-mute text-white"></i>';
                 }
             }
+        });
+
+        // Store music position before unloading page
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('musicPosition', backgroundAudio.currentTime.toString());
         });
 
         // Music toggle functionality
@@ -457,6 +465,7 @@
                 musicToggle.innerHTML = '<i class="fas fa-volume-mute text-white"></i>';
                 localStorage.setItem('musicPlaying', 'false');
             }
+            localStorage.setItem('musicPosition', backgroundAudio.currentTime.toString());
         });
 
         // Music confirmation functionality
