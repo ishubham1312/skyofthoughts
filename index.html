@@ -457,6 +457,8 @@
     </div>
     
     <script type="module">
+        import { containsStopwords } from './stopwords.js';
+        
         // DOM elements
         const starContainer = document.getElementById('starContainer');
         const addStarBtn = document.querySelector('.add-star-btn');
@@ -803,6 +805,27 @@
                 const thought = thoughtInput.value.trim();
                 if (!thought) {
                     alert("Please enter a thought first!");
+                    return;
+                }
+
+                // Check for inappropriate words
+                const stopwordCheck = containsStopwords(thought);
+                if (stopwordCheck.hasStopword) {
+                    const errorMessage = document.createElement('div');
+                    errorMessage.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: rgba(255, 0, 0, 0.8);
+                        color: white;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        z-index: 9999;
+                    `;
+                    errorMessage.textContent = `Your thought contains inappropriate words. Please revise and try again.`;
+                    document.body.appendChild(errorMessage);
+                    setTimeout(() => errorMessage.remove(), 3000);
                     return;
                 }
 
