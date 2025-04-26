@@ -517,7 +517,41 @@
                 
                 stars.push(star);
                 updateStarCount(stars.length);
+
+                 // Show success message
+                 const successMessage = document.createElement('div');
+                successMessage.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(0, 255, 0, 0.8);
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    z-index: 9999;
+                `;
+                successMessage.textContent = 'Star created successfully!';
+                document.body.appendChild(successMessage);
+                setTimeout(() => successMessage.remove(), 3000);
+
             } catch (error) {
+                 // Show success message
+                 const successMessage = document.createElement('div');
+                successMessage.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: red;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    z-index: 9999;
+                `;
+                successMessage.textContent = error.message;
+                document.body.appendChild(successMessage);
+                setTimeout(() => successMessage.remove(), 3000);
                 console.error("Error saving star:", error);
                 throw error;
             }
@@ -531,8 +565,9 @@
         // Render existing stars
         function renderStars() {
             starContainer.innerHTML = '';
+            
             stars.forEach((star) => {
-                createStarElement(star.x, star.y, star.thought, star.id);
+                createStarElement(star.x, star.y, star.thought, star._id);
             });
         }
         
@@ -570,28 +605,10 @@
             };
 
             try {
-                console.log('Saving star to local storage...', star);
                 saveStar(star);
                 
                 // Create and add the star element to the DOM
                 createStarElement(star.x, star.y, star.thought, star.id);
-                
-                // Show success message
-                const successMessage = document.createElement('div');
-                successMessage.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: rgba(0, 255, 0, 0.8);
-                    color: white;
-                    padding: 10px 20px;
-                    border-radius: 5px;
-                    z-index: 9999;
-                `;
-                successMessage.textContent = 'Star created successfully!';
-                document.body.appendChild(successMessage);
-                setTimeout(() => successMessage.remove(), 3000);
                 
                 return star;
             } catch (error) {
@@ -602,7 +619,6 @@
 
         // Create a star element
         function createStarElement(x, y, thought, id) {
-            console.log('Creating star element:', { x, y, thought, id });
             const star = document.createElement('div');
             star.className = 'star';
             star.style.left = `${x}vw`;
@@ -619,16 +635,17 @@
             star.style.height = `${size}px`;
             
             star.addEventListener('click', () => {
-                displayStarThought(id);
+                displayStarThought(thought);
             });
             
             starContainer.appendChild(star);
-            console.log('Star element added to container');
         }
         
         // Display a star's thought
-        function displayStarThought(starId) {
-            const star = stars.find(s => s.id === starId);
+        function displayStarThought(thought) {
+            
+            const star = stars.find(s => s.thought === thought);
+            
             if (star) {
                 thoughtDisplay.textContent = star.thought;
                 viewStarModal.style.display = 'flex';
@@ -720,7 +737,6 @@
 
             // Open add star modal
             addStarBtn.addEventListener('click', () => {
-                console.log('Add star button clicked');
                 thoughtInput.value = '';
                 addStarModal.style.display = 'flex';
                 thoughtInput.focus();
@@ -738,9 +754,7 @@
                 submitThoughtBtn.textContent = 'Creating...';
                 
                 try {
-                    console.log('Attempting to add new star...');
                     const star = addNewStar(thought);
-                    console.log('Star added successfully:', star);
                     addStarModal.style.display = 'none';
                     thoughtInput.value = '';
                 } catch (error) {
@@ -784,7 +798,6 @@
         
         // Initialize the app
         function init() {
-            console.log('Local storage initialized');
             setupEventListeners();
             setupShootingStars();
             loadStars();
