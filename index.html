@@ -48,6 +48,27 @@
             animation: twinkle 3s infinite alternate;
         }
         
+        .star.new-star {
+            animation: golden-glow 2s ease-in-out, twinkle 3s infinite alternate;
+            background-color: #ffd700;
+            box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
+        }
+        
+        @keyframes golden-glow {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
+            }
+            50% {
+                transform: scale(1.5);
+                box-shadow: 0 0 30px 10px rgba(255, 215, 0, 0.9);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
+            }
+        }
+        
         @keyframes twinkle {
             0% {
                 opacity: 0.3;
@@ -565,9 +586,8 @@
         // Render existing stars
         function renderStars() {
             starContainer.innerHTML = '';
-            
             stars.forEach((star) => {
-                createStarElement(star.x, star.y, star.thought, star._id);
+                createStarElement(star.x, star.y, star.thought, star._id, false); // Pass false to indicate this is not a new star
             });
         }
         
@@ -607,8 +627,8 @@
             try {
                 saveStar(star);
                 
-                // Create and add the star element to the DOM
-                createStarElement(star.x, star.y, star.thought, star.id);
+                // Create and add the star element to the DOM with golden glow
+                createStarElement(star.x, star.y, star.thought, star.id, true); // Pass true to indicate this is a new star
                 
                 return star;
             } catch (error) {
@@ -618,9 +638,9 @@
         }
 
         // Create a star element
-        function createStarElement(x, y, thought, id) {
+        function createStarElement(x, y, thought, id, isNewStar = false) {
             const star = document.createElement('div');
-            star.className = 'star';
+            star.className = isNewStar ? 'star new-star' : 'star'; // Only add new-star class if it's a new star
             star.style.left = `${x}vw`;
             star.style.top = `${y}vh`;
             star.dataset.id = id;
@@ -639,6 +659,13 @@
             });
             
             starContainer.appendChild(star);
+
+            // Remove the golden glow effect after 2 seconds only for new stars
+            if (isNewStar) {
+                setTimeout(() => {
+                    star.classList.remove('new-star');
+                }, 5000);
+            }
         }
         
         // Display a star's thought
