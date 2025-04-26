@@ -56,16 +56,34 @@
         
         @keyframes golden-glow {
             0% {
-                transform: scale(1);
-                box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
+                transform: scale(0);
+                opacity: 0;
+                box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0);
             }
-            50% {
+            20% {
+                transform: scale(0.5);
+                opacity: 0.3;
+                box-shadow: 0 0 20px 6px rgba(255, 215, 0, 0.3);
+            }
+            40% {
+                transform: scale(0.5);
+                opacity: 0.6;
+                box-shadow: 0 0 25px 7px rgba(255, 215, 0, 0.5);
+            }
+            60% {
+                transform: scale(1);
+                opacity: 0.8;
+                box-shadow: 0 0 30px 8px rgba(255, 215, 0, 0.7);
+            }
+            80% {
                 transform: scale(1.5);
-                box-shadow: 0 0 30px 10px rgba(255, 215, 0, 0.9);
+                opacity: 1;
+                box-shadow: 0 0 35px 9px rgba(255, 215, 0, 0.9);
             }
             100% {
-                transform: scale(1);
-                box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
+                transform: scale(2);
+                opacity: 1;
+                box-shadow: 0 0 30px 8px rgba(255, 215, 0, 0.7);
             }
         }
         
@@ -660,11 +678,11 @@
             
             starContainer.appendChild(star);
 
-            // Remove the golden glow effect after 2 seconds only for new stars
+            // Remove the golden glow effect after 8 seconds only for new stars
             if (isNewStar) {
                 setTimeout(() => {
                     star.classList.remove('new-star');
-                }, 5000);
+                }, 8000);
             }
         }
         
