@@ -1,22 +1,8 @@
 // List of words that are not allowed in Star Thoughts
 export const stopwords = [
-    "fuck",
-    "shit",
-    "bitch",
-    "nigga",
-    "nigger",
-    "asshole",
-    "bastard",
-    "cunt",
-    "damn",
-    "motherfucker",
-    "whore",
-    "slut",
-    "cock",
-    "penis",
-    "vagina",
+
     
-    // Add more inappropriate words as needed
+    // Add inappropriate words as needed
 ];
 
 // Function to check if text contains any stopwords
